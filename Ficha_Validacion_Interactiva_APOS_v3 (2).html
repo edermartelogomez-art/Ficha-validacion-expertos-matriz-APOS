@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de validación de contenido · Matriz APOS derivada</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef0f4;color:#1a1a18;font-size:14px;line-height:1.5}
+.wrap{max-width:1260px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+
+.print-bar{position:sticky;top:0;z-index:50;background:#fff;border:1px solid #d8d6cc;border-radius:10px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:10px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(20,30,60,.06)}
+.print-bar span{font-size:12px;color:#666;font-weight:500}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:7px;border:none;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .08s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-navy{background:#1F3864;color:#fff}
+.btn-navy:hover{background:#16294a}
+.btn-teal{background:#0F6E56;color:#fff}
+.btn-teal:hover{background:#0b5442}
+.btn-ghost{background:#eef1f6;color:#1F3864}
+.btn-ghost:hover{background:#dfe4ee}
+.btn-send{background:#B7791F;color:#fff}
+.btn-send:hover{background:#975f13}
+.btn-send.sent{background:#0F6E56}
+input[type="file"]{display:none}
+
+.doc-header{border:1px solid #d8d6cc;border-radius:14px;padding:1.5rem 1.75rem;margin-bottom:1.25rem;background:linear-gradient(135deg,#fff 0%,#f7f9fd 100%);box-shadow:0 1px 4px rgba(20,30,60,.05)}
+.doc-title{font-size:19px;font-weight:800;color:#0f1b33;margin-bottom:4px;letter-spacing:-.01em}
+.doc-sub{font-size:13px;color:#5a6478;margin-bottom:1.1rem}
+.meta-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.meta-item{background:#fff;border-radius:8px;padding:9px 11px;border:1px solid #e3e1da}
+.meta-lbl{font-size:10px;color:#92928a;margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.meta-val{font-size:12.5px;font-weight:700;color:#1a1a18}
+
+.progress-panel{background:#fff;border:2px solid #1F3864;border-radius:14px;padding:.9rem 1.2rem;margin-bottom:1.1rem;box-shadow:0 4px 16px rgba(31,56,100,.08);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.progress-lbl{font-size:12.5px;font-weight:800;color:#0f1b33}
+.progress-sub{font-size:10px;color:#92928a}
+.progress-val{font-size:18px;font-weight:800;color:#1F3864}
+.bar-outer{flex:1;min-width:140px;height:9px;background:#eef1f6;border-radius:6px;overflow:hidden}
+.bar-inner{height:100%;background:linear-gradient(90deg,#1F3864,#0F6E56);width:0%;transition:width .25s}
+
+.step-nav-top{background:#fff;border:1px solid #d8d6cc;border-radius:12px;padding:.8rem 1.1rem;margin-bottom:1.1rem;box-shadow:0 1px 4px rgba(20,30,60,.04)}
+.step-info{font-size:12.5px;font-weight:700;color:#1F3864;margin-bottom:6px}
+.step-info b{color:#0F6E56}
+.step-bar-outer{height:7px;background:#eef1f6;border-radius:5px;overflow:hidden}
+.step-bar-inner{height:100%;background:linear-gradient(90deg,#1F3864,#0F6E56);width:0%;transition:width .25s}
+
+.tab-bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tab-chip{font-size:11px;font-weight:700;padding:6px 11px;border-radius:20px;border:1.5px solid #d8d6cc;background:#fff;color:#5a6478;cursor:pointer;transition:all .12s;white-space:nowrap}
+.tab-chip:hover{border-color:#1F3864;color:#1F3864}
+.tab-chip.active{background:#1F3864;border-color:#1F3864;color:#fff}
+.tab-chip.done{border-color:#0F6E56;color:#0F6E56}
+.tab-chip.done::after{content:" \2713";font-weight:800}
+.tab-chip.active.done{background:#0F6E56;color:#fff}
+.field-lbl .req{color:#B3261E;font-weight:800}
+.field-box.missing,.rate-select.missing{border-color:#B3261E!important;background:#fdf3f2!important}
+.step{display:none}
+.step.active{display:block}
+#steps-container.view-all .step{display:block!important}
+
+.step-nav-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:1.4rem 0 2rem;flex-wrap:wrap}
+
+.expert-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-wrap{display:flex;flex-direction:column;gap:4px}
+.field-lbl{font-size:10px;font-weight:700;color:#5a6478;text-transform:uppercase;letter-spacing:.05em}
+.field-box{border:1.5px solid #c2c0b8;border-radius:8px;padding:9px 11px;min-height:36px;font-size:13px;color:#1a1a18;background:#fff;outline:none;cursor:text;transition:border-color .12s}
+.field-box:focus{border-color:#1F3864;box-shadow:0 0 0 3px rgba(31,56,100,.10)}
+.field-box:empty:before{content:attr(data-ph);color:#aaa}
+
+.intro-box{background:linear-gradient(135deg,#fff8e6,#fffbf0);border:1px solid #f0c97a;border-radius:10px;padding:13px 16px;margin-bottom:1.2rem;font-size:12.5px;color:#7a5200;line-height:1.7}
+.intro-box.blue{background:linear-gradient(135deg,#eef3ff,#f7f9fd);border-color:#c7d4ea;color:#1a2438}
+
+.table-wrap{background:#fff;border:1px solid #d8d6cc;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;box-shadow:0 1px 4px rgba(20,30,60,.04)}
+table.ref{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ref th,table.ref td{border:1px solid #e6e4dc;padding:8px 10px;text-align:left;vertical-align:top}
+table.ref th{background:#1F3864;color:#fff;font-weight:700}
+table.ref tr:nth-child(even) td{background:#f7f9fd}
+
+.sec-header{display:flex;align-items:center;gap:10px;margin-bottom:.85rem;padding-bottom:8px;border-bottom:2px solid #dde1ea}
+.sec-num{min-width:30px;height:30px;padding:0 8px;border-radius:9px;background:linear-gradient(135deg,#1F3864,#2b4d8a);color:#fff;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(31,56,100,.3)}
+.sec-title{font-size:14.5px;font-weight:800;color:#0f1b33}
+.sec-count{font-size:11px;color:#92928a;margin-left:auto;background:#f3f5fa;padding:3px 10px;border-radius:20px;font-weight:700}
+
+.q-item{background:#fff;border:1px solid #dcdad2;border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:.9rem;box-shadow:0 1px 3px rgba(20,30,60,.04)}
+@media (min-width:1080px){
+.q-item{display:grid;grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"head rate" "text rate" "text comment";column-gap:1.6rem;align-items:start}
+.q-head{grid-area:head}
+.q-text{grid-area:text;margin-bottom:0}
+.rate-row{grid-area:rate;margin-bottom:.5rem;justify-content:flex-start}
+.q-comment-wrap{grid-area:comment}
+.expert-grid{grid-template-columns:repeat(3,1fr)}
+}
+.q-head{display:flex;align-items:baseline;gap:8px;margin-bottom:.5rem;flex-wrap:wrap}
+.q-code{font-size:11px;font-weight:800;color:#fff;background:#0F6E56;padding:2px 9px;border-radius:20px;letter-spacing:.03em}
+.q-name{font-size:13.5px;font-weight:700;color:#0f1b33}
+.q-text{font-size:12.8px;color:#3a4258;line-height:1.65;margin-bottom:.8rem}
+
+.rate-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.7rem;align-items:flex-end}
+.rate-field{display:flex;flex-direction:column;gap:3px}
+.rate-lbl{font-size:9.5px;font-weight:700;color:#92928a;text-transform:uppercase;letter-spacing:.04em}
+.rate-select{width:78px;border:1.5px solid #c2c0b8;border-radius:7px;padding:6px 6px;font-size:12.5px;text-align:center;background:#fff;outline:none;cursor:pointer}
+.rate-select:focus{border-color:#1F3864}
+.rate-select.rated{border-color:#0F6E56;background:#f0fdf7;font-weight:700;color:#0F6E56}
+
+.comment-box{border:1.5px solid #c2c0b8;border-radius:8px;padding:8px 11px;min-height:42px;font-size:12.3px;color:#1a1a18;background:#fafaf8;outline:none;width:100%;line-height:1.55}
+.comment-box:focus{border-color:#1F3864;background:#fff}
+.comment-box:empty:before{content:attr(data-ph);color:#aaa}
+.comment-lbl{font-size:9.5px;font-weight:700;color:#92928a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;display:block}
+
+.open-box{border:1.5px solid #c2c0b8;border-radius:8px;padding:10px 13px;min-height:60px;font-size:13px;color:#1a1a18;background:#fafaf8;outline:none;width:100%;line-height:1.65}
+.open-box:focus{border-color:#1F3864;box-shadow:0 0 0 3px rgba(31,56,100,.08);background:#fff}
+.open-box:empty:before{content:attr(data-ph);color:#aaa}
+
+.oq-item{margin-bottom:1rem}
+.oq-text{font-size:13px;font-weight:600;color:#0f1b33;margin-bottom:.5rem}
+
+.choice-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:.3rem}
+.choice-opt{display:flex;align-items:center;gap:6px;font-size:12.8px;cursor:pointer}
+.choice-opt input{accent-color:#1F3864;width:15px;height:15px;cursor:pointer}
+
+.resumen-table-wrap{overflow-x:auto}
+table.resumen{width:100%;border-collapse:collapse;font-size:11.5px;min-width:640px}
+table.resumen th,table.resumen td{border:1px solid #e6e4dc;padding:6px 8px;text-align:left;vertical-align:top}
+table.resumen th{background:#1F3864;color:#fff;font-weight:700;position:sticky;top:0}
+table.resumen td.center{text-align:center;font-weight:700;color:#0F6E56}
+table.resumen td.empty{color:#c2c0b8;text-align:center}
+table.resumen tr:nth-child(even) td{background:#f7f9fd}
+
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:.8rem}
+
+@media print{
+  .print-bar,.progress-panel,.step-nav-top,.step-nav-bottom{display:none!important}
+  body{background:#fff}
+  .wrap{padding:0;max-width:100%}
+  .step{display:block!important}
+  .q-item,.doc-header,.table-wrap{page-break-inside:avoid}
+  .rate-select{-webkit-appearance:none;appearance:none;border:none;background:none;color:#0F6E56;font-weight:800;padding:2px 0;width:auto}
+  .field-box,.comment-box,.open-box{background:#fff!important}
+  table.resumen{font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="print-bar">
+  <span>Ficha de validación · Matriz APOS derivada</span>
+  <div class="btn-group">
+    <button class="btn btn-ghost" onclick="guardarAvance()">💾 Guardar avance</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('cargar-input').click()">📂 Cargar avance</button>
+    <input type="file" id="cargar-input" accept=".json" onchange="cargarAvance(event)">
+    <button class="btn btn-teal" onclick="exportarExcel()">📊 Exportar a Excel</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+    <button class="btn btn-send" id="btn-enviar" onclick="enviarRespuestas()">📤 Enviar respuestas</button>
+  </div>
+</div>
+
+<div class="doc-header">
+  <div class="doc-title">Ficha de validación de contenido por juicio de expertos</div>
+  <div class="doc-sub">Matriz APOS propuesta para la comprensión de la derivada como razón de cambio instantánea en Cálculo Diferencial, estudiantes de Ingeniería</div>
+  <div class="meta-row">
+    <div class="meta-item"><div class="meta-lbl">Investigador</div><div class="meta-val">Eder Santiago Martelo Gómez</div></div>
+    <div class="meta-item"><div class="meta-lbl">Universidad</div><div class="meta-val">Universidad de Manizales</div></div>
+    <div class="meta-item"><div class="meta-lbl">Maestría</div><div class="meta-val">Educación y Transformación Digital</div></div>
+    <div class="meta-item"><div class="meta-lbl">Año</div><div class="meta-val">2026</div></div>
+  </div>
+</div>
+
+<div class="progress-panel">
+  <div>
+    <div class="progress-lbl">Progreso total de calificación</div>
+    <div class="progress-sub">Componentes con al menos una valoración asignada</div>
+  </div>
+  <div class="bar-outer"><div class="bar-inner" id="bar-inner"></div></div>
+  <div class="progress-val" id="progress-val">0 / 0</div>
+</div>
+
+<div class="step-nav-top">
+  <div class="step-info">Paso <b id="step-current">1</b> de <b id="step-total">12</b> &middot; <span id="step-label"></span></div>
+  <div class="step-bar-outer"><div class="step-bar-inner" id="step-bar-inner"></div></div>
+  <div class="tab-bar" id="tab-bar"></div>
+</div>
+
+<div id="steps-container">
+
+  <!-- PASO 1: Datos del experto -->
+  <div class="step active" data-step="1">
+    <div class="sec-header"><div class="sec-num">A</div><div class="sec-title">Datos del experto</div></div>
+    <div class="expert-grid">
+      <div class="field-wrap" style="grid-column:1/-1">
+        <div class="field-lbl">Nombre completo <span class="req">*</span></div>
+        <div class="field-box" id="exp_nombre" contenteditable="true" data-ph="Escriba su nombre completo..."></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Formación académica <span class="req">*</span></div>
+        <div class="field-box" id="exp_formacion" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Área de especialidad <span class="req">*</span></div>
+        <div class="field-box" id="exp_area" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Institución <span class="req">*</span></div>
+        <div class="field-box" id="exp_institucion" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Correo electrónico <span class="req">*</span></div>
+        <div class="field-box" id="exp_correo" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap" style="grid-column:1/-1">
+        <div class="field-lbl">Experiencia relacionada con educación matemática, cálculo, APOS/APOE, evaluación, didáctica de la matemática o enseñanza universitaria <span class="req">*</span></div>
+        <div class="field-box" id="exp_experiencia" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Fecha de evaluación <span class="req">*</span></div>
+        <div class="field-box" id="exp_fecha" contenteditable="true" data-ph="dd/mm/aaaa"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2: Propósito, escala, criterios, marco APOS, instrucciones -->
+  <div class="step" data-step="2">
+    <div class="sec-header"><div class="sec-num">B</div><div class="sec-title">Propósito de la validación</div></div>
+    <div class="intro-box">
+      Se solicita a usted, en calidad de experto evaluador, valorar la pertinencia, la claridad, la coherencia teórica/APOS y la observabilidad de los componentes de una matriz analítica basada en la teoría APOS, propuesta para interpretar respuestas estudiantiles sobre la derivada como razón de cambio instantánea en un curso de Cálculo Diferencial de ingeniería.
+      <br><br>
+      La valoración se centra en el contenido del instrumento: delimitación del constructo, dimensiones, niveles APOS, indicadores observables, reglas de clasificación, evidencias esperadas y categoría metodológica adicional. La matriz se encuentra en fase de propuesta preliminar; las valoraciones permitirán calcular el coeficiente V de Aiken por componente y ajustar el instrumento antes de su pilotaje.
+    </div>
+
+    <div class="sec-header"><div class="sec-num">C</div><div class="sec-title">Escala de valoración</div></div>
+    <div class="table-wrap">
+      <table class="ref">
+        <tr><th style="width:60px">Valor</th><th>Descripción</th></tr>
+        <tr><td>1</td><td>No cumple / requiere reformulación profunda.</td></tr>
+        <tr><td>2</td><td>Cumple parcialmente / requiere ajustes importantes.</td></tr>
+        <tr><td>3</td><td>Cumple adecuadamente / requiere ajustes menores.</td></tr>
+        <tr><td>4</td><td>Cumple plenamente / se recomienda conservar.</td></tr>
+      </table>
+    </div>
+
+    <div class="sec-header"><div class="sec-num">D</div><div class="sec-title">Criterios de evaluación</div></div>
+    <div class="table-wrap">
+      <table class="ref">
+        <tr><th style="width:170px">Criterio</th><th>Definición</th></tr>
+        <tr><td>Pertinencia</td><td>El componente es relevante para el constructo que se pretende valorar.</td></tr>
+        <tr><td>Claridad</td><td>El componente está redactado de forma comprensible y no ambigua.</td></tr>
+        <tr><td>Coherencia teórica/APOS</td><td>El componente se articula adecuadamente con el constructo evaluado, con la teoría APOS y, cuando corresponda, con los niveles Acción, Proceso, Objeto o Esquema.</td></tr>
+        <tr><td>Observabilidad</td><td>El componente puede identificarse razonablemente en respuestas reales de estudiantes.</td></tr>
+      </table>
+    </div>
+
+    <div class="sec-header"><div class="sec-num">E</div><div class="sec-title">Marco orientador APOS para la valoración</div></div>
+    <div class="intro-box blue">
+      La matriz no clasifica las respuestas de los estudiantes como correctas o incorrectas, sino como evidencias de posibles construcciones mentales asociadas a la comprensión de la derivada como razón de cambio instantánea.
+      <br><br>
+      <strong>Acción:</strong> respuestas centradas en reglas, procedimientos o identificación de valores, sin interpretación explícita del valor de la derivada como variación de una cantidad respecto de otra.
+      <br><br>
+      <strong>Proceso:</strong> respuestas en las que el estudiante reconoce variación o cambio entre cantidades, usualmente de forma verbal o cualitativa, pero sin articular todavía de manera estable signo, magnitud, unidades, punto de interpretación o diferencia entre razón promedio e instantánea.
+      <br><br>
+      <strong>Objeto:</strong> respuestas en las que el estudiante interpreta f'(a) como razón de cambio instantánea situada en un punto específico, articulando signo, magnitud, unidades y sentido contextual.
+      <br><br>
+      <strong>Esquema:</strong> respuestas en las que el estudiante usa la interpretación de la derivada para comparar tasas de cambio, predecir comportamientos, tomar decisiones o transferir el razonamiento a situaciones nuevas.
+    </div>
+
+    <div class="sec-header"><div class="sec-num">F</div><div class="sec-title">Instrucciones para diligenciar</div></div>
+    <div class="intro-box">
+      Revise cada componente y asígnele una valoración de 1 a 4 en cada criterio, usando los selectores. El texto de cada componente ya está incluido, de modo que no es necesario consultar otro documento. Incluya comentarios cuando asigne valores 1, 2 o 3, o cuando considere necesario ajustar la redacción. Use los botones "Anterior" y "Siguiente" para avanzar por bloques, o "Ver todo" si prefiere desplazarse por la ficha completa.
+    </div>
+  </div>
+
+  <!-- PASOS 3-9: Bloques (se insertan por JS) -->
+  <div class="step" data-step="3"><div id="bloque-container-0"></div></div>
+  <div class="step" data-step="4"><div id="bloque-container-1"></div></div>
+  <div class="step" data-step="5"><div id="bloque-container-2"></div></div>
+  <div class="step" data-step="6"><div id="bloque-container-3"></div></div>
+  <div class="step" data-step="7"><div id="bloque-container-4"></div></div>
+  <div class="step" data-step="8"><div id="bloque-container-5"></div></div>
+  <div class="step" data-step="9"><div id="bloque-container-6"></div></div>
+
+  <!-- PASO 10: Valoración global -->
+  <div class="step" data-step="10">
+    <div class="sec-header"><div class="sec-num">H</div><div class="sec-title">Valoración global del instrumento</div></div>
+    <div id="global-container"></div>
+  </div>
+
+  <!-- PASO 11: Preguntas abiertas + cierre -->
+  <div class="step" data-step="11">
+    <div class="sec-header"><div class="sec-num">I</div><div class="sec-title">Preguntas abiertas finales</div></div>
+
+    <div class="oq-item">
+      <div class="oq-text">1. ¿Qué elementos considera más sólidos de la matriz?</div>
+      <div class="open-box" id="oq1" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">2. ¿Qué elementos requieren ajuste?</div>
+      <div class="open-box" id="oq2" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">3. ¿Falta alguna dimensión relevante para interpretar la comprensión de la derivada como razón de cambio instantánea?</div>
+      <div class="open-box" id="oq3" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">4. ¿Algún nivel APOS requiere mayor precisión?</div>
+      <div class="open-box" id="oq4" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">5. ¿Los indicadores son aplicables a respuestas reales de estudiantes de ingeniería?</div>
+      <div class="open-box" id="oq5" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">6. ¿Recomienda eliminar, fusionar o reformular alguno de los componentes codificados? Indique el código correspondiente.</div>
+      <div class="open-box" id="oq6" contenteditable="true" data-ph="Escriba su respuesta..."></div>
+    </div>
+    <div class="oq-item">
+      <div class="oq-text">7. ¿Recomienda usar la matriz para pilotaje después de ajustes?</div>
+      <div class="choice-row">
+        <label class="choice-opt"><input type="radio" name="oq7" value="Si"> Sí</label>
+        <label class="choice-opt"><input type="radio" name="oq7" value="No"> No</label>
+        <label class="choice-opt"><input type="radio" name="oq7" value="Si, con ajustes"> Sí, con ajustes</label>
+      </div>
+    </div>
+
+    <div class="sec-header" style="margin-top:1.4rem"><div class="sec-num">J</div><div class="sec-title">Cierre</div></div>
+    <div class="intro-box">
+      Declaro que la información y las valoraciones consignadas en esta ficha corresponden a mi juicio profesional como experto evaluador.
+    </div>
+    <div class="sign-grid">
+      <div class="field-wrap">
+        <div class="field-lbl">Firma del experto (nombre completo equivale a firma digital)</div>
+        <div class="field-box" id="firma" contenteditable="true" data-ph=""></div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-lbl">Fecha</div>
+        <div class="field-box" id="cierre_fecha" contenteditable="true" data-ph="dd/mm/aaaa"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 12: Resumen -->
+  <div class="step" data-step="12">
+    <div class="sec-header"><div class="sec-num">K</div><div class="sec-title">Resumen de resultados (autogenerado)</div></div>
+    <div class="intro-box blue">
+      Esta tabla se actualiza sola a medida que califica. Cuando termine, use "Exportar a Excel" en la barra superior para obtener el archivo listo para combinar con los otros evaluadores y calcular la V de Aiken.
+    </div>
+    <div class="table-wrap resumen-table-wrap">
+      <div style="font-size:11.5px;font-weight:700;color:#5a6478;margin-bottom:8px">Componentes</div>
+      <table class="resumen" id="tabla-resumen-componentes"></table>
+    </div>
+    <div class="table-wrap resumen-table-wrap">
+      <div style="font-size:11.5px;font-weight:700;color:#5a6478;margin-bottom:8px">Valoración global</div>
+      <table class="resumen" id="tabla-resumen-global"></table>
+    </div>
+  </div>
+
+</div>
+
+<div class="step-nav-bottom">
+  <button class="btn btn-ghost" id="btn-back" onclick="prevStep()">&larr; Anterior</button>
+  <button class="btn btn-ghost" onclick="toggleViewAll()" id="btn-viewall">📜 Ver todo en una página</button>
+  <button class="btn btn-navy" id="btn-next" onclick="nextStep()">Siguiente &rarr;</button>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ============ DATOS ============
+const BLOQUES = [
+  { title: "Bloque 1. Constructo y alcance", items: [
+    ["C1","Delimitación del constructo","La matriz interpreta la comprensión de la derivada como razón de cambio instantánea, integrando componentes variacionales, representacionales y contextuales en estudiantes de ingeniería."],
+    ["C2","Alcance de la matriz","La matriz se centra en la interpretación del valor de la derivada una vez obtenido, es decir, en el tratamiento que el estudiante da a f'(a) más allá de su cálculo; no busca reconstruir la descomposición genética completa ni la teoría formal de la derivada."],
+  ]},
+  { title: "Bloque 2. Dimensiones del constructo", items: [
+    ["D1","Razón de cambio instantánea","Comprensión de f'(a) como tasa de variación en un punto, y no como un número aislado."],
+    ["D2","Variación local","Reconocimiento de que la cantidad cambia en un entorno del punto de interés."],
+    ["D3","Razón promedio frente a razón instantánea","Distinción entre Δy/Δx en un intervalo y f'(a) como límite de esa razón cuando el intervalo se contrae."],
+    ["D4","Signo","Dirección del cambio en el fenómeno: aumento, disminución o ausencia de cambio local según el valor de la derivada."],
+    ["D5","Magnitud","Cantidad de cambio de la variable dependiente por unidad de la variable independiente."],
+    ["D6","Unidades","Unidades del valor interpretado, coherentes con el contexto del fenómeno y expresadas como unidad de salida por unidad de entrada."],
+    ["D7","Punto de interpretación","Anclaje del valor de la derivada al punto específico en que se evalúa, y no a la función en general."],
+    ["D8","Relación gráfica pendiente/tangente","Vínculo entre f'(a) y la pendiente de la recta tangente a la gráfica de f en (a, f(a)), cuando la representación gráfica está disponible."],
+    ["D9","Relación simbólica","Coherencia entre la expresión simbólica de f'(a) y su interpretación verbal o numérica."],
+    ["D10","Lenguaje contextual","Traducción del valor matemático a una afirmación verbal situada en el fenómeno estudiado."],
+    ["D11","Comparación entre tasas de cambio","Contraste entre la razón de cambio en distintos puntos, intervalos o variables."],
+    ["D12","Predicción","Uso del valor interpretado de la derivada para anticipar el comportamiento del fenómeno."],
+    ["D13","Toma de decisiones","Uso de la interpretación del valor de la derivada como criterio para decidir entre alternativas en un contexto aplicado."],
+    ["D14","Transferencia","Aplicación del razonamiento interpretativo a un contexto distinto al trabajado previamente."],
+    ["D15","Coordinación entre elementos puntuales y globales","Relación entre el comportamiento local de la derivada en un punto y el comportamiento global de la función, cuando la tarea lo permite."],
+  ]},
+  { title: "Bloque 3. Nivel APOS: Acción", items: [
+    ["A1","Construcción mental esperada (Acción)","Calcula f'(a) aplicando reglas de derivación o identifica un valor, sin conectar el resultado con la variación de una cantidad en un contexto."],
+    ["A2","Indicadores observables (Acción)","Reproduce el procedimiento de derivación o el valor numérico; no menciona qué cantidad cambia ni respecto a qué; no distingue el punto de evaluación como relevante."],
+    ["A3","Regla general de clasificación (Acción)","Clasificar como Acción si la respuesta se limita al procedimiento o al valor, sin ningún intento de interpretación variacional, gráfica o contextual."],
+    ["A4","Evidencias esperadas (Acción)","Presencia del cálculo o de la regla de derivación; ausencia de lenguaje de variación, signo, magnitud o unidades; ausencia de referencia al fenómeno o al punto de evaluación."],
+  ]},
+  { title: "Bloque 4. Nivel APOS: Proceso", items: [
+    ["P1","Construcción mental esperada (Proceso)","Reconoce que hay variación local y describe verbalmente la relación entre las cantidades que cambian. Puede identificar dirección de cambio o crecimiento/decrecimiento, pero aún no articula de manera estable signo, magnitud, unidades, punto de interpretación y diferencia entre razón promedio e instantánea."],
+    ["P2","Indicadores observables (Proceso)","Usa lenguaje de variación; identifica una dirección de cambio sin cuantificarla con precisión; puede referirse a razón promedio e instantánea sin diferenciarlas consistentemente; relaciona de forma general la gráfica con crecimiento o decrecimiento, sin vincularla aún a la pendiente en un punto."],
+    ["P3","Regla general de clasificación (Proceso)","Clasificar como Proceso si la respuesta describe la variación de la cantidad de forma cualitativa, sin articular de manera estable y conjunta signo, magnitud, unidades y distinción entre razón instantánea y razón promedio."],
+    ["P4","Evidencias esperadas (Proceso)","Mención explícita de que la cantidad varía y de un sentido de cambio; cuantificación parcial o ausente de magnitud y unidades; tratamiento inestable de la diferencia entre razón promedio e instantánea."],
+  ]},
+  { title: "Bloque 5. Nivel APOS: Objeto", items: [
+    ["O1","Construcción mental esperada (Objeto)","Interpreta f'(a) como razón de cambio instantánea en el punto a, articulando signo, magnitud, unidades y sentido contextual. Cuando la tarea lo demanda, distingue la razón instantánea de la razón promedio y coordina representaciones simbólicas, gráficas o verbales."],
+    ["O2","Indicadores observables (Objeto)","Interpreta el signo como dirección del cambio en el fenómeno; cuantifica la magnitud con unidades correspondientes; ancla la interpretación al punto a; distingue razón promedio e instantánea cuando la tarea lo requiere; vincula el valor con la pendiente de la tangente cuando hay representación gráfica."],
+    ["O3","Regla general de clasificación (Objeto)","Clasificar como Objeto si la respuesta interpreta el valor de la derivada con signo, magnitud, unidades y anclaje al punto, y coordina otras dimensiones representacionales o comparativas cuando la tarea las requiere."],
+    ["O4","Evidencias esperadas (Objeto)","Interpretación completa del valor en el contexto, con sentido, cantidad y unidades; coherencia entre representación simbólica, gráfica o verbal cuando estén disponibles; referencia explícita al punto de evaluación."],
+  ]},
+  { title: "Bloque 6. Nivel APOS: Esquema", items: [
+    ["E1","Construcción mental esperada (Esquema)","Utiliza la interpretación de la derivada de forma integrada para comparar tasas de cambio, predecir comportamiento, tomar decisiones o transferir el razonamiento a un contexto nuevo, coordinando representaciones de manera flexible. Cuando la tarea lo permite, relaciona el comportamiento local de la derivada con el comportamiento global de la función."],
+    ["E2","Indicadores observables (Esquema)","Compara razones de cambio y justifica la comparación; anticipa comportamientos del fenómeno; usa el valor como criterio para decidir; traslada el razonamiento interpretativo a contextos distintos, incluyendo valores negativos o poco familiares; relaciona signo o magnitud puntual con tendencia global cuando la tarea lo permite."],
+    ["E3","Regla general de clasificación (Esquema)","Clasificar como Esquema si la respuesta moviliza la interpretación para una tarea de orden superior: comparar, predecir, decidir, transferir o relacionar lo puntual con lo global, y no únicamente describir el valor en su contexto original."],
+    ["E4","Evidencias esperadas (Esquema)","Razonamiento que articula comparación, predicción, decisión o transferencia de forma explícita; coherencia y justificación del razonamiento, no solo de la conclusión; evidencia de que la interpretación se sostiene en un contexto nuevo o poco familiar; articulación puntual-global cuando la tarea lo permite."],
+  ]},
+  { title: "Bloque 7. Categoría metodológica adicional", items: [
+    ["S1","Definición de \u201cSin evidencia clasificable\u201d","Categoría que no constituye un nivel APOS. Se utiliza cuando la respuesta está en blanco, es irrelevante, incoherente, copia el enunciado sin transformación matemática, o no ofrece información suficiente para inferir una construcción mental sobre la derivada."],
+    ["S2","Separación metodológica respecto de los niveles APOS","Esta categoría evita forzar respuestas sin evidencia dentro del nivel Acción y protege la validez de la clasificación, al distinguir ausencia de evidencia de evidencia de una acción matemática."],
+  ]},
+];
+
+const GLOBAL = [
+  ["G1","Coherencia global de la matriz","Valore si el conjunto de constructo, dimensiones, niveles APOS, indicadores, reglas y evidencias mantiene una organización lógica y consistente."],
+  ["G2","Adecuación para estudiantes de ingeniería","Valore si la matriz es apropiada para interpretar respuestas de estudiantes de ingeniería en un curso de Cálculo Diferencial."],
+  ["G3","Aplicabilidad a respuestas abiertas reales","Valore si la matriz puede ser usada por un docente o investigador para clasificar respuestas abiertas reales de estudiantes."],
+  ["G4","Suficiencia global de dimensiones y niveles","Valore si las dimensiones y los niveles incluidos son suficientes para interpretar la comprensión de la derivada como razón de cambio instantánea."],
+  ["G5","Suficiencia global de indicadores y reglas","Valore si los indicadores observables, reglas de clasificación y evidencias esperadas son suficientes para orientar la clasificación de respuestas estudiantiles."],
+];
+
+const STEP_LABELS = [
+  "Datos del experto",
+  "Propósito, escala y marco APOS",
+  "Bloque 1: Constructo y alcance",
+  "Bloque 2: Dimensiones del constructo",
+  "Bloque 3: Nivel Acción",
+  "Bloque 4: Nivel Proceso",
+  "Bloque 5: Nivel Objeto",
+  "Bloque 6: Nivel Esquema",
+  "Bloque 7: Categoría adicional",
+  "Valoración global",
+  "Preguntas abiertas y cierre",
+  "Resumen de resultados"
+];
+const TOTAL_STEPS = STEP_LABELS.length;
+
+// ============ RENDER ============
+function ratingSelect(id){
+  return `<select class="rate-select" id="${id}" onchange="onRatingChange(this)">
+    <option value="">-</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+  </select>`;
+}
+
+function renderBloques(){
+  BLOQUES.forEach((bloque, idx) => {
+    const cont = document.getElementById('bloque-container-'+idx);
+    let html = `<div class="sec-header"><div class="sec-num">G</div><div class="sec-title">${bloque.title}</div><div class="sec-count">${bloque.items.length} componentes</div></div>`;
+    bloque.items.forEach(([code, name, text]) => {
+      html += `<div class="q-item">
+        <div class="q-head"><span class="q-code">${code}</span><span class="q-name">${name}</span></div>
+        <div class="q-text">${text}</div>
+        <div class="rate-row">
+          <div class="rate-field"><span class="rate-lbl">Pertinencia</span>${ratingSelect('r_'+code+'_pert')}</div>
+          <div class="rate-field"><span class="rate-lbl">Claridad</span>${ratingSelect('r_'+code+'_clar')}</div>
+          <div class="rate-field"><span class="rate-lbl">Coh. APOS</span>${ratingSelect('r_'+code+'_coh')}</div>
+          <div class="rate-field"><span class="rate-lbl">Observ.</span>${ratingSelect('r_'+code+'_obs')}</div>
+        </div>
+        <div class="q-comment-wrap"><span class="comment-lbl">Comentarios o sugerencias (opcional)</span>
+        <div class="comment-box" id="c_${code}" contenteditable="true" data-ph="Opcional..."></div>
+      </div></div>`;
+    });
+    cont.innerHTML = html;
+  });
+}
+
+function renderGlobal(){
+  const cont = document.getElementById('global-container');
+  let html = '';
+  GLOBAL.forEach(([code, name, text]) => {
+    html += `<div class="q-item">
+      <div class="q-head"><span class="q-code">${code}</span><span class="q-name">${name}</span></div>
+      <div class="q-text">${text}</div>
+      <div class="rate-row">
+        <div class="rate-field"><span class="rate-lbl">Valoración</span>${ratingSelect('r_'+code+'_val')}</div>
+      </div>
+      <div class="q-comment-wrap"><span class="comment-lbl">Comentarios o sugerencias (opcional)</span>
+      <div class="comment-box" id="c_${code}" contenteditable="true" data-ph="Opcional..."></div></div>
+    </div>`;
+  });
+  cont.innerHTML = html;
+}
+
+// ============ STEPPER ============
+let currentStep = 1;
+let viewAllMode = false;
+
+const TAB_SHORT = ["Experto","Gu\u00eda","B1 Constructo","B2 Dimensiones","B3 Acci\u00f3n","B4 Proceso","B5 Objeto","B6 Esquema","B7 Sin evidencia","Global","Abiertas","Resumen"];
+const CAMPOS_EXPERTO_REQ = ['exp_nombre','exp_formacion','exp_area','exp_institucion','exp_correo','exp_experiencia','exp_fecha'];
+
+function renderTabs(){
+  const bar = document.getElementById('tab-bar');
+  if(!bar) return;
+  let out = '';
+  for(let i=1;i<=TOTAL_STEPS;i++){
+    const done = stepCompleto(i) ? ' done' : '';
+    const act = (i===currentStep) ? ' active' : '';
+    const short = TAB_SHORT[i-1] || ('Paso '+i);
+    out += `<button class="tab-chip${act}${done}" onclick="showStep(${i})" title="${STEP_LABELS[i-1]}">${short}</button>`;
+  }
+  bar.innerHTML = out;
+}
+
+function stepCompleto(n){
+  if(n===1) return CAMPOS_EXPERTO_REQ.every(id => { const el=document.getElementById(id); return el && el.innerText.trim() !== ''; });
+  if(n>=3 && n<=9){
+    const bloque = BLOQUES[n-3];
+    return bloque.items.every(([code]) => ['pert','clar','coh','obs'].every(cr => getVal('r_'+code+'_'+cr)));
+  }
+  if(n===10) return GLOBAL.every(([code]) => getVal('r_'+code+'_val'));
+  if(n===11){ const oq7 = document.querySelector('input[name="oq7"]:checked'); return !!oq7; }
+  return true; // pasos informativos (2 y 12)
+}
+
+function showStep(n){
+  currentStep = n;
+  document.querySelectorAll('.step').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.step)===n);
+  });
+  document.getElementById('step-current').textContent = n;
+  document.getElementById('step-label').textContent = STEP_LABELS[n-1];
+  document.getElementById('step-total').textContent = TOTAL_STEPS;
+  document.getElementById('step-bar-inner').style.width = (n/TOTAL_STEPS*100)+'%';
+  document.getElementById('btn-back').disabled = (n===1);
+  document.getElementById('btn-next').textContent = (n===TOTAL_STEPS) ? 'Fin \u2713' : 'Siguiente \u2192';
+  document.getElementById('btn-next').disabled = (n===TOTAL_STEPS);
+  renderTabs();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function nextStep(){ if(currentStep<TOTAL_STEPS) showStep(currentStep+1); }
+function prevStep(){ if(currentStep>1) showStep(currentStep-1); }
+
+function toggleViewAll(){
+  viewAllMode = !viewAllMode;
+  const container = document.getElementById('steps-container');
+  container.classList.toggle('view-all', viewAllMode);
+  document.getElementById('step-nav-top-el') // noop safeguard
+  document.querySelector('.step-nav-bottom').style.justifyContent = viewAllMode ? 'center' : 'space-between';
+  document.getElementById('btn-back').style.display = viewAllMode ? 'none' : 'inline-block';
+  document.getElementById('btn-next').style.display = viewAllMode ? 'none' : 'inline-block';
+  document.querySelector('.step-nav-top').style.display = viewAllMode ? 'none' : 'block';
+  document.getElementById('btn-viewall').textContent = viewAllMode ? '\ud83e\udded Volver a modo por pasos' : '\ud83d\udcdc Ver todo en una p\u00e1gina';
+  if(!viewAllMode) showStep(currentStep);
+}
+
+// ============ RESUMEN AUTOGENERADO ============
+function allComponentCodes(){
+  let codes = [];
+  BLOQUES.forEach(b => b.items.forEach(i => codes.push(i)));
+  return codes;
+}
+
+function renderResumen(){
+  const comps = allComponentCodes();
+  let rows = `<tr><th>Código</th><th>Componente</th><th>Pert.</th><th>Clar.</th><th>Coh. APOS</th><th>Observ.</th></tr>`;
+  let calificados = 0;
+  comps.forEach(([code, name]) => {
+    const p = getVal('r_'+code+'_pert'), c = getVal('r_'+code+'_clar'), h = getVal('r_'+code+'_coh'), o = getVal('r_'+code+'_obs');
+    if(p||c||h||o) calificados++;
+    rows += `<tr><td>${code}</td><td>${name}</td>
+      <td class="${p?'center':'empty'}">${p||'-'}</td>
+      <td class="${c?'center':'empty'}">${c||'-'}</td>
+      <td class="${h?'center':'empty'}">${h||'-'}</td>
+      <td class="${o?'center':'empty'}">${o||'-'}</td></tr>`;
+  });
+  document.getElementById('tabla-resumen-componentes').innerHTML = rows;
+
+  let grows = `<tr><th>Código</th><th>Aspecto</th><th>Valoración</th></tr>`;
+  GLOBAL.forEach(([code, name]) => {
+    const v = getVal('r_'+code+'_val');
+    grows += `<tr><td>${code}</td><td>${name}</td><td class="${v?'center':'empty'}">${v||'-'}</td></tr>`;
+  });
+  document.getElementById('tabla-resumen-global').innerHTML = grows;
+
+  const total = comps.length;
+  document.getElementById('progress-val').textContent = `${calificados} / ${total}`;
+  document.getElementById('bar-inner').style.width = (total ? (calificados/total*100) : 0) + '%';
+}
+
+function getVal(id){
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function onRatingChange(sel){
+  sel.classList.remove('missing');
+  sel.classList.toggle('rated', !!sel.value);
+  renderResumen();
+}
+
+// ============ GUARDAR / CARGAR AVANCE (JSON) ============
+function collectState(){
+  const state = { expert:{}, ratings:{}, comments:{}, open:{}, step:currentStep };
+  ['exp_nombre','exp_formacion','exp_area','exp_institucion','exp_correo','exp_experiencia','exp_fecha','firma','cierre_fecha'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) state.expert[id] = el.innerText;
+  });
+  document.querySelectorAll('.rate-select').forEach(sel=>{ state.ratings[sel.id] = sel.value; });
+  document.querySelectorAll('.comment-box').forEach(box=>{ state.comments[box.id] = box.innerText; });
+  for(let i=1;i<=6;i++){ const el=document.getElementById('oq'+i); if(el) state.open['oq'+i]=el.innerText; }
+  const oq7 = document.querySelector('input[name="oq7"]:checked');
+  state.open.oq7 = oq7 ? oq7.value : '';
+  return state;
+}
+
+function applyState(state){
+  if(!state) return;
+  Object.entries(state.expert||{}).forEach(([id,val])=>{ const el=document.getElementById(id); if(el) el.innerText = val; });
+  Object.entries(state.ratings||{}).forEach(([id,val])=>{ const el=document.getElementById(id); if(el){ el.value = val; el.classList.toggle('rated', !!val); } });
+  Object.entries(state.comments||{}).forEach(([id,val])=>{ const el=document.getElementById(id); if(el) el.innerText = val; });
+  for(let i=1;i<=6;i++){ const el=document.getElementById('oq'+i); if(el && state.open) el.innerText = state.open['oq'+i]||''; }
+  if(state.open && state.open.oq7){
+    const radio = document.querySelector(`input[name="oq7"][value="${state.open.oq7}"]`);
+    if(radio) radio.checked = true;
+  }
+  renderResumen();
+  showStep(state.step && state.step>=1 && state.step<=TOTAL_STEPS ? state.step : 1);
+}
+
+function guardarAvance(){
+  const state = collectState();
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const nombre = (document.getElementById('exp_nombre').innerText || 'experto').trim().replace(/\s+/g,'_') || 'experto';
+  a.href = url;
+  a.download = `avance_ficha_APOS_${nombre}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function cargarAvance(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const state = JSON.parse(e.target.result);
+      applyState(state);
+      alert('Avance cargado correctamente.');
+    }catch(err){
+      alert('No se pudo leer el archivo. Verifique que sea un archivo .json guardado desde esta misma ficha.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============ EXPORTAR A EXCEL ============
+function exportarExcel(){
+  const state = collectState();
+  const wb = XLSX.utils.book_new();
+
+  const expertRows = [
+    ['Campo','Valor'],
+    ['Nombre completo', state.expert.exp_nombre||''],
+    ['Formación académica', state.expert.exp_formacion||''],
+    ['Área de especialidad', state.expert.exp_area||''],
+    ['Institución', state.expert.exp_institucion||''],
+    ['Correo electrónico', state.expert.exp_correo||''],
+    ['Experiencia relacionada', state.expert.exp_experiencia||''],
+    ['Fecha de evaluación', state.expert.exp_fecha||''],
+  ];
+  const wsExpert = XLSX.utils.aoa_to_sheet(expertRows);
+  XLSX.utils.book_append_sheet(wb, wsExpert, 'Datos_experto');
+
+  const compRows = [['Código','Componente','Pertinencia','Claridad','Coherencia_APOS','Observabilidad','Comentarios']];
+  allComponentCodes().forEach(([code,name])=>{
+    compRows.push([
+      code, name,
+      getVal('r_'+code+'_pert'), getVal('r_'+code+'_clar'), getVal('r_'+code+'_coh'), getVal('r_'+code+'_obs'),
+      (document.getElementById('c_'+code)||{}).innerText || ''
+    ]);
+  });
+  const wsComp = XLSX.utils.aoa_to_sheet(compRows);
+  XLSX.utils.book_append_sheet(wb, wsComp, 'Componentes');
+
+  const globRows = [['Código','Aspecto','Valoración','Comentarios']];
+  GLOBAL.forEach(([code,name])=>{
+    globRows.push([code, name, getVal('r_'+code+'_val'), (document.getElementById('c_'+code)||{}).innerText || '']);
+  });
+  const wsGlob = XLSX.utils.aoa_to_sheet(globRows);
+  XLSX.utils.book_append_sheet(wb, wsGlob, 'Valoracion_global');
+
+  const openRows = [['Pregunta','Respuesta']];
+  const preguntas = [
+    '1. Elementos más sólidos','2. Elementos que requieren ajuste','3. Dimensión faltante',
+    '4. Nivel APOS que requiere precisión','5. Aplicabilidad a respuestas reales',
+    '6. Componentes a eliminar/fusionar/reformular','7. Recomienda pilotaje'
+  ];
+  for(let i=1;i<=6;i++) openRows.push([preguntas[i-1], state.open['oq'+i]||'']);
+  openRows.push([preguntas[6], state.open.oq7||'']);
+  const wsOpen = XLSX.utils.aoa_to_sheet(openRows);
+  XLSX.utils.book_append_sheet(wb, wsOpen, 'Preguntas_abiertas');
+
+  const nombre = (state.expert.exp_nombre || 'experto').trim().replace(/\s+/g,'_') || 'experto';
+  XLSX.writeFile(wb, `Resultados_Ficha_APOS_${nombre}.xlsx`);
+}
+
+// ============ ENVÍO AUTOMÁTICO ============
+// Pegue aquí la URL de su implementación de Google Apps Script (termina en /exec)
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycby6oNpA9MnhPm-kdeV4CwBdKy8jTUbUdB5g4FET3GWP-FktJMZtKhPSTotAyfhtRYw3cw/exec";
+
+function pendientes(){
+  const p = { experto: [], componentes: [], global: [], dictamen: false };
+  CAMPOS_EXPERTO_REQ.forEach(id => {
+    const el = document.getElementById(id);
+    const vacio = !el || el.innerText.trim() === '';
+    if(el) el.classList.toggle('missing', vacio);
+    if(vacio) p.experto.push(id);
+  });
+  allComponentCodes().forEach(([code]) => {
+    let falta = false;
+    ['pert','clar','coh','obs'].forEach(cr => {
+      const sel = document.getElementById('r_'+code+'_'+cr);
+      const vacio = !getVal('r_'+code+'_'+cr);
+      if(sel) sel.classList.toggle('missing', vacio);
+      if(vacio) falta = true;
+    });
+    if(falta) p.componentes.push(code);
+  });
+  GLOBAL.forEach(([code]) => {
+    const sel = document.getElementById('r_'+code+'_val');
+    const vacio = !getVal('r_'+code+'_val');
+    if(sel) sel.classList.toggle('missing', vacio);
+    if(vacio) p.global.push(code);
+  });
+  p.dictamen = !document.querySelector('input[name="oq7"]:checked');
+  return p;
+}
+
+function descargarRespaldo(state){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const nombre = (state.expert.exp_nombre || 'experto').trim().replace(/\s+/g,'_') || 'experto';
+  a.href = url;
+  a.download = `RESPUESTAS_ficha_APOS_${nombre}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function enviarRespuestas(){
+  const p = pendientes();
+  const msgs = [];
+  if(p.experto.length) msgs.push('\u2022 Complete todos los datos del experto (pesta\u00f1a "Experto").');
+  if(p.componentes.length) msgs.push('\u2022 Faltan valoraciones en los componentes: '+p.componentes.join(', ')+'.');
+  if(p.global.length) msgs.push('\u2022 Faltan valoraciones globales: '+p.global.join(', ')+'.');
+  if(p.dictamen) msgs.push('\u2022 Marque una opci\u00f3n en la pregunta 7 (recomendaci\u00f3n de pilotaje).');
+  if(msgs.length){
+    renderTabs();
+    alert('Antes de enviar, por favor complete lo siguiente:\n\n'+msgs.join('\n')+'\n\nLos campos pendientes quedaron resaltados en rojo. Los comentarios y las dem\u00e1s preguntas abiertas son opcionales.');
+    if(p.experto.length) showStep(1);
+    else if(p.componentes.length){
+      const code = p.componentes[0];
+      for(let b=0;b<BLOQUES.length;b++){ if(BLOQUES[b].items.some(i=>i[0]===code)){ showStep(b+3); break; } }
+    }
+    else if(p.global.length) showStep(10);
+    else showStep(11);
+    return;
+  }
+  const state = collectState();
+  state.enviado_en = new Date().toISOString();
+  if(ENDPOINT_URL.indexOf('http') !== 0){
+    alert('El env\u00edo en l\u00ednea no est\u00e1 configurado. Se descargar\u00e1 un archivo de respuestas (.json): por favor env\u00edelo por correo al investigador.');
+    descargarRespaldo(state);
+    return;
+  }
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true; btn.textContent = 'Enviando\u2026';
+  try{
+    await fetch(ENDPOINT_URL, { method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(state) });
+    btn.textContent = '\u2714 Respuestas enviadas';
+    btn.classList.add('sent');
+    alert('Sus respuestas fueron enviadas correctamente. Muchas gracias por su valiosa colaboraci\u00f3n.');
+  }catch(err){
+    btn.disabled = false; btn.textContent = '\ud83d\udce4 Enviar respuestas';
+    alert('No fue posible enviar en l\u00ednea (revise su conexi\u00f3n). Se descargar\u00e1 un archivo de respuestas (.json): por favor env\u00edelo por correo al investigador.');
+    descargarRespaldo(state);
+  }
+}
+
+// ============ INIT ============
+renderBloques();
+renderGlobal();
+renderResumen();
+showStep(1);
+document.addEventListener('input', function(e){
+  if(e.target.classList && e.target.classList.contains('comment-box')) renderResumen();
+  renderTabs();
+});
+document.addEventListener('change', function(){ renderTabs(); });
+renderTabs();
+</script>
+</body>
+</html>
